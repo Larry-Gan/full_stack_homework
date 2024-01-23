@@ -1,0 +1,41 @@
+.App {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.app-content {
+  display: flex;
+  flex-grow: 1;
+  height: calc(100vh - 50px); 
+}
+
+.JSONTreeView {
+  width: 400px;
+  overflow-y: auto;
+}
+
+.content-display {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 10px;
+  box-sizing: border-box;
+  border-left: 1px solid #ccc; 
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.file-actions {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background: #f0f0f0;
+  border-bottom: 1px solid #ccc;
+}
+
+.file-actions button {
+  padding: 5px 10px;
+  margin-right: 10px;
+  cursor: pointer;
+}
