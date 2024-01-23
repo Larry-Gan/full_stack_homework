@@ -1,5 +1,6 @@
 **/files/
 notes/
+.vscode/
 /backend/__pycache__
 /backend/venv
 /frontend/node_modules
@@ -18,6 +19,7 @@ notes/
 /frontend/.env.development.local
 /frontend/.env.test.local
 /frontend/.env.production.local
+/frontend/.eslintrc.json
 
 /frontend/npm-debug.log*
 /frontend/yarn-debug.log*
