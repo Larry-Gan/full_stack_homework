@@ -40,3 +40,4 @@ You can start the application as follows. The first time it runs, it will run `i
 docker compose up
 ```
 
+Once it's running, you can view the application at `http://localhost:3000`
