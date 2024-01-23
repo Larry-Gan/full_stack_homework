@@ -3,15 +3,16 @@ from flask_cors import CORS
 import mysql.connector
 import json
 import os
+import zipfile
 
 app = Flask(__name__)
 
 # Database connection details
 app.config.from_mapping(
-    DB_HOST = os.environ.get('DB_HOST', ''),
-    DB_USER = os.environ.get('DB_USER', ''),
-    DB_PASSWORD = os.environ.get('DB_PASSWORD', ''),
-    DB_DATABASE = os.environ.get('DB_DATABASE', '')
+    DB_HOST = os.environ.get('DB_HOST', 'localhost'),
+    DB_USER = os.environ.get('DB_USER', 'root'),
+    DB_PASSWORD = os.environ.get('DB_PASSWORD', 'mysecretpassword'),
+    DB_DATABASE = os.environ.get('DB_DATABASE', 'machina_labs')
 )
 
 CORS(app)
@@ -128,37 +129,39 @@ def directory():
 
 @app.route('/file_preview', methods=['GET'])
 def file_preview():
-    # Get file loc
-    file_location = request.args.get('location')
-    base_directory = './files/files'  
-    file_path = os.path.join(base_directory, file_location)
+    # Get file location
+    file_location = os.path.join("files/", request.args.get('location'))
+    zip_file_path = './files.zip' 
 
-    # Read file as plaintext and return content
+    # Read file from zip as plaintext and return content
     try:
-        if os.path.exists(file_path) and not os.path.isdir(file_path):
-            with open(file_path, 'r') as file:
-                content = file.read()
+        with zipfile.ZipFile(zip_file_path, 'r') as z:
+            with z.open(file_location) as file:
+                content = file.read().decode('utf-8') 
                 return jsonify({'content': content}), 200
-        else:
-            return jsonify({'error': 'File does not exist or is a directory'}), 404
+    except KeyError:
+        return jsonify({'error': 'File not found in zip archive'}), 404
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
     
 @app.route('/file_download', methods=['GET'])
 def file_download():
-    # Get file loc
-    file_location = request.args.get('location')
-    base_directory = './files/files'
-    file_path = os.path.join(base_directory, file_location)
+    # Get file location
+    file_location = os.path.join("files/", request.args.get('location'))
+    zip_file_path = './files.zip' 
 
-    # Send file to Frontend for download
+    # Read file from zip and send file to Frontend for download
     try:
-        if os.path.exists(file_path) and not os.path.isdir(file_path):
-            return send_file(file_path, as_attachment=True)
-        else:
-            return jsonify({'error': 'File does not exist or is a directory'}), 404
+        with zipfile.ZipFile(zip_file_path, 'r') as z:
+            if file_location in z.namelist():
+                temp_path = z.extract(file_location)
+                return send_file(temp_path, as_attachment=True)
+            else:
+                return jsonify({'error': 'File does not exist in zip archive'}), 404
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
     
 
 if __name__ == '__main__':
